@@ -5,7 +5,7 @@ const router = new Router();
 
 module.exports = router;
 
-
+//Получить всех пользователей
 router.get('/all', async (req, res) => {
     const {
         rows
@@ -13,6 +13,7 @@ router.get('/all', async (req, res) => {
     res.send(rows);
 });
 
+//Получить информацию о пользователе
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
     
@@ -20,6 +21,7 @@ router.get('/:id', async (req, res) => {
     res.send(rows[0]);
 });
 
+//Получить все чаты в которых состоит пользователь
 router.get('/:id/chats', async (req, res) => {
     const {id} = req.params;
     const {rows} = await db.query(
