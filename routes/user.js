@@ -1,9 +1,13 @@
 const Router = require('express').Router;
+const middle_auth= require('../middleware/auth');
+
 const db = require('../db/DB').client;
 
 const router = new Router();
+router.use(middle_auth);
 
 module.exports = router;
+
 
 //Получить всех пользователей
 router.get('/all', async (req, res) => {
@@ -28,5 +32,6 @@ router.get('/:id/chats', async (req, res) => {
         `SELECT DISTINCT id, name FROM Chats
         LEFT JOIN UsersChats ON Chats.id = UsersChats.chat_id
         WHERE UsersChats.user_id = $1 OR Chats.creator_id = $1`, [~~id]);
-    res.send(rows);
+    res.status(200).json(rows);
+    //setTimeout(() =>res.status(200).json(rows), 3000);
 });

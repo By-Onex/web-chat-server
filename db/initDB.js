@@ -33,13 +33,14 @@ const CreateDB = async db => {
         chat_id integer REFERENCES Chats(id),
         user_id integer REFERENCES Users(id),
         UNIQUE (chat_id, user_id)
-    );`)
+    );`);
 
     result = await db.query(`CREATE TABLE IF NOT EXISTS Messages (
         id SERIAL PRIMARY KEY,
         chat_id integer REFERENCES Chats(id),
         user_id integer REFERENCES Users(id),
         text varchar(225) NOT NULL CHECK(text <> ''),
+        reading boolean DEFAULT false,
         date TIMESTAMPTZ
     );`)
 }
@@ -91,8 +92,6 @@ const GenerateValuesDB = async db => {
             VALUES %L RETURNING *;`, messages))).rows;
         console.log(inserted_rows);
         }
-    
-
     return result;
 }
 
