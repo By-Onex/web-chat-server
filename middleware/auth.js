@@ -15,4 +15,13 @@ const checkAuth = (req, res, next) => {
     }
 }
 
-module.exports = checkAuth;
+const getUser = (token) => {
+    if(!token) return null;
+    try {
+        return jwt.verify(token, process.env.TOKEN_KEY);
+    }catch(err){
+        return null;
+    }
+}
+
+module.exports = {checkAuth, getUser};

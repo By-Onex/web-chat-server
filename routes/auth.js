@@ -14,6 +14,7 @@ router.post('/login', async (req, res) => {
     const user = rows[0];
 
     if(user){
+        const exp = Math.floor(Date.now()/1000) + 60*60*2;
         const token = jwt.sign(
             {id: user.id, name: user.name },
             process.env.TOKEN_KEY,
@@ -22,6 +23,7 @@ router.post('/login', async (req, res) => {
             }
         );
         user.token = token;
+        user.expired = exp;
         return res.status(200).json(user);
     }
     return res.status(400).json({error:`Пользователя с именем ${user_name} не существует`});
