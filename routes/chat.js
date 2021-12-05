@@ -1,7 +1,11 @@
 const Router = require('express').Router;
 const db = require('../db/DB').client;
 const format = require('pg-format');
-const middle_auth= require('../middleware/auth');
+const middle_auth= require('../middleware/auth').checkAuth;
+
+const ws = require('../ws/index');
+
+const chatRepo = require('../db/chatRepo');
 
 const router = new Router();
 
@@ -31,12 +35,12 @@ router.get('/:id/messages', async (req, res) => {
         WHERE Messages.chat_id = $1 ORDER BY date`, [~~id]);
     //setTimeout(() => res.json(rows), 500);
    
-    for (let i = 0; i < rows.length; i++) {
+    /*for (let i = 0; i < rows.length; i++) {
         if (!rows[i].reading && req.user.id !== rows[i].user_id) {
             await db.query(`UPDATE Messages Set reading = true WHERE id = $1`, [rows[i].id]);
             rows[i].reading = true;
         }
-    }
+    }*/
     res.json(rows);
 });
 
@@ -56,7 +60,9 @@ router.get('/:id/users', async (req, res) => {
 router.post('/:id/create_message', async (req, res) => {
     const msg_data = [req.body.chat_id, req.body.user_id, req.body.text, req.body.date];
     const { rows } = await db.query(format(`INSERT INTO Messages (chat_id, user_id, text, date) VALUES %L RETURNING *;`, [msg_data]))
-    
-    //res.json(rows[0]);
     setTimeout(() =>res.json(rows[0]), 1500);
+    let users = await chatRepo.findAllUsersInChat(req.body.chat_id)
+    users = users.filter(u => u.id !== req.body.user_id).map(u => u.id);
+    ws.SendMessageTo(users, 'NEW_MESSAGE', rows[0])
+    
 });
