@@ -37,7 +37,6 @@ const StartServer = (server) => {
         noServer: true
     });
 
-
     wsServer.on('connection', (ws) => {
         ws.on('message', (msg) => {
             try {
