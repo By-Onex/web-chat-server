@@ -39,12 +39,14 @@ const StartServer = (server) => {
 
     wsServer.on('connection', (ws) => {
         ws.on('message', (msg) => {
+            console.log(msg);
             try {
+                
                 const data = JSON.parse(msg);
                 if (ws.user) {
                     onMessage(ws, data);
                 } else {
-                    const user = auth(data.token);
+                    const user = auth(data.body.token);
                     if (!user) return ws.close(1011, "ошибка подключения");
                     ws.user = user;
                     users.set(user.id, ws);
