@@ -33,15 +33,16 @@ router.get('/:id/messages', async (req, res) => {
     const { id } = req.params;
     const { rows } = await db.query(`SELECT * FROM Messages 
         WHERE Messages.chat_id = $1 ORDER BY date`, [~~id]);
-    //setTimeout(() => res.json(rows), 500);
-   
+
+    setTimeout(() => res.json(rows), 500);
+    
     /*for (let i = 0; i < rows.length; i++) {
         if (!rows[i].reading && req.user.id !== rows[i].user_id) {
             await db.query(`UPDATE Messages Set reading = true WHERE id = $1`, [rows[i].id]);
             rows[i].reading = true;
         }
     }*/
-    res.json(rows);
+   // res.json(rows);
 });
 
 //Получить всех пользователей чата

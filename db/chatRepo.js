@@ -20,7 +20,7 @@ const findAllUsersInChat = async (chat_id) => {
 }
 
 const updateUserReadingMessage = async (message_id) => {
-    const {rows} = await db.query(`UPDATE Messages SET reading = false WHERE id = $1 RETURNING *`, [message_id]);
+    const {rows} = await db.query(`UPDATE Messages SET reading = true WHERE id = $1 RETURNING *`, [message_id]);
     return rows[0];
 }
 

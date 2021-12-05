@@ -19,12 +19,17 @@ const onMessage = async (ws, data) => {
 
 const SendMessageTo = (from, type, data) => {
     function send(user_id, type, data) {
-        const ws = users.get(user_id);
-        if (!ws) return;
-        ws.send(JSON.stringify({
-            type,
-            body:data
-        }));
+        try{
+            const ws = users.get(user_id);
+            if (!ws) return;
+            ws.send(JSON.stringify({
+                type,
+                body:data
+            }));
+        }catch(err){
+            console.log(err);
+            ws.close(1011, "ошибка подключения");
+        }
     }
     if (Array.isArray(from)) {
         from.forEach(id => send(id, type, data));
@@ -36,7 +41,7 @@ const StartServer = (server) => {
     let wsServer = new WebSocketServer({
         noServer: true
     });
-
+ 
     wsServer.on('connection', (ws) => {
         ws.on('message', (msg) => {
             try {
@@ -51,7 +56,8 @@ const StartServer = (server) => {
                     ws.send(JSON.stringify({
                         type: 'CONN',
                         connection: true
-                    }))
+                    }));
+                    console.log('User count', users.size)
                 }
             } catch (err) {
                 console.log(err);
@@ -60,9 +66,11 @@ const StartServer = (server) => {
 
         });
         ws.on("close", (code, reason) => {
+            console.log(code);
             if (ws.user) {
                 users.delete(ws.user.id)
             }
+            console.log('User count', users.size)
         })
     });
 
