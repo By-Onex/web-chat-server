@@ -1,5 +1,4 @@
 const db = require('./DB').client;
-const format = require('pg-format');
 
 const findAllUsersInChatW = async (chat_id, user_id) => {
     const {rows} = await db.query(`SELECT Users.id FROM Users

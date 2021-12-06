@@ -18,14 +18,11 @@ const ConnectDB = async (recreate = false)=> {
             return false;
         }
 
-        client.query(`SELECT Chats.id, Chats.name, Count(CASE WHEN Messages.reading = false AND Messages.user_id <> $1 then 1 else null end) as unreading FROM Chats
-        LEFT JOIN Messages ON Chats.id = Messages.chat_id
-        where Chats.id IN
-        (SELECT DISTINCT Chats.id FROM Chats
-            JOIN UsersChats ON Chats.id = UsersChats.chat_id
-            WHERE Chats.creator_id = $1 OR UsersChats.user_id = $1)
-        GROUP BY Chats.id
-            ;`, [5])
+        client.query(`SELECT Users.id, Users.name FROM Users
+        LEFT JOIN UsersChats ON UsersChats.user_id = Users.id
+        LEFT JOIN Chats ON Chats.creator_id = Users.id
+        WHERE UsersChats.chat_id = $1 OR Chats.id = $1
+            ;`, [1])
             .then(data => console.log(data.rows));
 
     });
